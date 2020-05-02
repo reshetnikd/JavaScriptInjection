@@ -16,8 +16,9 @@ class ActionViewController: UIViewController {
     var pageTitle = ""
     var pageURL = ""
     var examples = ["alert(document.title);"]
+    var codeText = ""
     var scripts = [String: String]()
-    let defaults = UserDefaults.standard
+    var defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,8 +27,6 @@ class ActionViewController: UIViewController {
         
         // For example, look for an image and place it into an image view.
         // Replace this with something appropriate for the type[s] your extension supports.
-        scripts = defaults.object(forKey: "SavedScripts") as? [String: String] ?? [String: String]()
-        
         if let inputItem = extensionContext?.inputItems.first as? NSExtensionItem {
             if let itemProvider = inputItem.attachments?.first {
                 itemProvider.loadItem(forTypeIdentifier: kUTTypePropertyList as String) { [weak self] (dictionary, error) in
@@ -38,6 +37,7 @@ class ActionViewController: UIViewController {
                     
                     DispatchQueue.main.async {
                         self?.title = self?.pageTitle
+                        self?.script.text = self?.codeText
                     }
                 }
             }
@@ -62,9 +62,10 @@ class ActionViewController: UIViewController {
         
         let url = URL(string: pageURL)
         let host = url?.host
-        
+        print(scripts)
         scripts[host!] = script.text
         defaults.set(scripts, forKey: "SavedScripts")
+        print(scripts)
         
         extensionContext?.completeRequest(returningItems: [item])
     }
