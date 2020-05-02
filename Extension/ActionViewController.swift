@@ -15,6 +15,7 @@ class ActionViewController: UIViewController {
     
     var pageTitle = ""
     var pageURL = ""
+    var examples = ["alert(document.title);"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,6 +44,7 @@ class ActionViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(selectExample))
     }
 
     @IBAction func done() {
@@ -55,6 +57,17 @@ class ActionViewController: UIViewController {
         item.attachments = [customJavaScript]
         
         extensionContext?.completeRequest(returningItems: [item])
+    }
+    
+    @objc func selectExample() {
+        let ac = UIAlertController(title: "JS Examples", message: "Select prewritten example.", preferredStyle: .actionSheet)
+        for i in 0..<examples.count {
+            ac.addAction(UIAlertAction(title: examples[i], style: .default, handler: { (_) in
+                self.script.text = self.examples[i]
+            }))
+        }
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(ac, animated: true)
     }
     
     @objc func adjustForKeyboard(notification: Notification) {
